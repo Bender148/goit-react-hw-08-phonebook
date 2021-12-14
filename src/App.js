@@ -12,18 +12,6 @@ class App extends Component {
     filter: "",
   };
 
-  componentDidMount() {
-    const contacts = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contacts);
-    parsedContacts && this.setState({ contacts: [...parsedContacts] });
-  }
-
-  componentDidUpdate(_prevProps, prevState) {
-    if (prevState.contacts !== this.state.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
-
   submitHandler = (newContact) => {
     const { contacts } = this.state;
     const existingContact = contacts.find(
@@ -53,6 +41,18 @@ class App extends Component {
       };
     });
   };
+
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+    parsedContacts && this.setState({ contacts: [...parsedContacts] });
+  }
+
+  componentDidUpdate(_prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
 
   render() {
     const filtered = this.state.contacts.filter(
