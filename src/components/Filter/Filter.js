@@ -2,30 +2,23 @@ import React from "react";
 import PropTypes from "prop-types";
 import styles from "./Filter.module.css";
 
-const Filter = ({ filterValue, filterUpdate }) => {
+const Filter = ({ filter, filterUpdate }) => {
   return (
     <div className={styles.filter}>
       <label>
         Find contacts by name
         <input
           type="text"
-          name="filter"
-          value={filterValue}
-          onChange={filterUpdate}
-          autoComplete="off"
-          required
+          value={filter}
+          onChange={e => filterUpdate(e.target.value)}
         />
       </label>
     </div>
   );
 };
 
-Filter.defaultProps = {
-  filterValue: "",
-};
-
 Filter.propTypes = {
-  filterValue: PropTypes.string,
+  filter: PropTypes.string,
   filterUpdate: PropTypes.func.isRequired,
 };
 
