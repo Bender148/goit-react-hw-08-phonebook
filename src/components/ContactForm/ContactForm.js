@@ -1,11 +1,11 @@
 // Imports from React
 import React, { Component } from 'react';
-// Helpers imports
-import { v4 as uuidv4 } from 'uuid';
-import PropTypes from 'prop-types';
 // Imports from Redux
 import { connect } from 'react-redux';
-import { addContact } from '../../redux/phonebook-actions';
+import { addContact } from '../../redux/contacts-operations';
+import { getAllContacts } from '../../redux/contacts-selectors';
+// Helpers imports
+import PropTypes from 'prop-types';
 // Styles imports
 import styles from './ContactForm.module.css';
 
@@ -26,25 +26,23 @@ class ContactForm extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    const id = uuidv4();
     const { name, number } = this.state;
+    const { items, submitHandler } = this.props;
 
     if (!name) {
       return;
     }
 
-    const existingContact = this.props.state.contacts.items.find(
-      contact => contact.name === name,
-    );
+    const existingContact = items.find(contact => contact.name === name);
 
     if (existingContact) {
       alert(`${existingContact.name} is already in contacts.`);
       return;
     }
 
-    const newContact = { id, name, number };
+    const newContact = { name: name.trim(), number: number.trim() };
 
-    this.props.submitHandler(newContact);
+    submitHandler(newContact);
 
     this.reset();
   };
@@ -85,7 +83,7 @@ class ContactForm extends Component {
 }
 
 const mapStateToProps = state => ({
-  state,
+  items: getAllContacts(state),
 });
 
 const mapDispatchToProps = dispatch => ({

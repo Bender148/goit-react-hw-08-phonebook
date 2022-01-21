@@ -1,9 +1,12 @@
+// Imports from React
 import React from 'react';
-import PropTypes from 'prop-types';
-
+// Imports from Redux
 import { connect } from 'react-redux';
-import { updateFilter } from '../../redux/phonebook-actions';
-
+import { updateFilter } from '../../redux/contacts-actions';
+import { getFilterValue } from '../../redux/contacts-selectors';
+// Imports of helpers
+import PropTypes from 'prop-types';
+// Styles imports
 import styles from './Filter.module.css';
 
 const Filter = ({ filterValue, filterUpdate }) => {
@@ -34,7 +37,7 @@ Filter.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  filterValue: state.contacts.filter,
+  filterValue: getFilterValue(state),
 });
 
 const mapDispatchToProps = dispatch => ({
