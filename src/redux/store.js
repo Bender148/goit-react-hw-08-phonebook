@@ -7,11 +7,16 @@ import { phonebookReducer } from './contacts-reducers';
 
 const middleware = [...getDefaultMiddleware(), logger];
 
+const customizedMiddleware = getDefaultMiddleware({
+  serializableCheck: false
+})
+
 const store = configureStore({
   reducer: {
     contacts: phonebookReducer,
   },
   middleware,
+  customizedMiddleware,
   devTools: process.env.NODE_ENV !== 'production',
 });
 
