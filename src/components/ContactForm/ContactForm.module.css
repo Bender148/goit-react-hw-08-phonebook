@@ -16,7 +16,7 @@
 }
 
 .form input:focus {
-  border: 2px solid #3826da;
+  border: 2px solid #28933a;
 }
 
 .btn {
@@ -25,9 +25,9 @@
 
   text-transform: uppercase;
   font-weight: 700;
-  color: #b44b05;
+  color: #71b405;
 
-  border: 2px solid #b44b05;
+  border: 2px solid #71b405;
   border-radius: 7px;
 
   background-color: transparent;
@@ -40,7 +40,7 @@
 .btn:hover,
 .btn:focus {
   color: #ffffff;
-  background-color: #b44b05;
+  background-color: #71b405;
 
   outline: none;
 }

@@ -2,8 +2,14 @@
 import React, { Component } from 'react';
 // Imports from Redux
 import { connect } from 'react-redux';
-import { fetchContacts, deleteContact } from '../../redux/contacts-operations';
-import { getFilteredItems, getLoading } from '../../redux/contacts-selectors';
+import {
+  fetchContacts,
+  deleteContact,
+} from '../../redux/contacts/contacts-operations';
+import {
+  getFilteredItems,
+  getLoading,
+} from '../../redux/contacts/contacts-selectors';
 // Imports of helpers
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -16,7 +22,7 @@ class ContactList extends Component {
   static propTypes = {
     filtered: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.number.isRequired,
+        id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         number: PropTypes.string.isRequired,
       }).isRequired,

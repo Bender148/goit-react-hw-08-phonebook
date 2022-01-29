@@ -15,12 +15,14 @@ import {
   deleteContactError,
   updateFilter,
 } from './contacts-actions';
+import { logoutSuccess } from '../auth/auth-actions';
 
 const items = createReducer([], {
   [fetchContactsSuccess]: (_, { payload }) => payload,
   [addContactSuccess]: (state, { payload }) => [payload, ...state],
   [deleteContactSuccess]: (state, { payload }) =>
     state.filter(contact => contact.id !== payload),
+  [logoutSuccess]: () => [],
 });
 
 const filter = createReducer('', {
@@ -39,8 +41,15 @@ const loading = createReducer(false, {
   [deleteContactError]: () => false,
 });
 
-export const phonebookReducer = combineReducers({
+const error = createReducer(null, {
+  [fetchContactsError]: (_, { payload }) => payload,
+  [addContactError]: (_, { payload }) => payload,
+  [deleteContactError]: (_, { payload }) => payload,
+});
+
+export const contactsReducer = combineReducers({
   items,
   filter,
   loading,
+  error,
 });
