@@ -1,91 +1,83 @@
-// Imports from React
-import React, { Component } from 'react';
+// React imports
+import React, { useCallback, useState } from 'react';
+
 // Imports from Redux
-import { connect } from 'react-redux';
-import {
-  fetchContacts,
-  deleteContact,
-} from '../../redux/contacts/contacts-operations';
-import {
-  getFilteredItems,
-  getLoading,
-} from '../../redux/contacts/contacts-selectors';
-// Imports of helpers
-import PropTypes from 'prop-types';
-import _ from 'lodash';
-import Loader from 'react-loader-spinner';
-import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from '../../redux/contacts/contacts-operations';
+import { getAllContacts } from '../../redux/contacts/contacts-selectors';
+
 // Styles imports
-import styles from './ContactList.module.css';
+import styles from './ContactForm.module.css';
 
-class ContactList extends Component {
-  static propTypes = {
-    filtered: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        number: PropTypes.string.isRequired,
-      }).isRequired,
-    ).isRequired,
-    onDeleteContact: PropTypes.func.isRequired,
-  };
+export default function ContactForm() {
+  // Setting up state for input values
+  const [newContact, setNewContact] = useState({ name: '', number: '' });
+  // Getting all contacts from store
+  const allContacts = useSelector(getAllContacts);
+  // Getting dispatch function
+  const dispatch = useDispatch();
 
-  componentDidMount() {
-    this.props.fetchContacts();
-  }
+  // Function to handle inputs
+  const handleInputChange = useCallback(
+    ({ target: { name, value } }) => {
+      setNewContact({ ...newContact, [name]: value });
+    },
+    [newContact],
+  );
 
-  render() {
-    const { filtered, onDeleteContact, isLoading } = this.props;
-    const loaderConfig = {
-      type: 'TailSpin',
-      color: '#80cbc4',
-      height: 50,
-      width: 50,
-      className: styles.loader,
-    };
+  // Function to handle form submit
+  const handleSubmit = useCallback(
+    event => {
+      event.preventDefault();
 
-    return (
-      <>
-        {isLoading && <Loader {...loaderConfig} />}
+      if (!newContact.name) {
+        return;
+      }
 
-        {!_.isEmpty(filtered) && (
-          <ul className={styles.contacts}>
-            {filtered.map(({ id, name, number }) => (
-              <li key={id} className={styles.item}>
-                <div>
-                  <p>{name}:</p>
-                  <p>{number}</p>
-                </div>
+      // Checking if the contact already exists
+      const existingContact = allContacts.find(
+        contact => contact.name === newContact.name,
+      );
 
-                <button
-                  className={styles.btn}
-                  onClick={() => {
-                    onDeleteContact(id);
-                  }}
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+      if (existingContact) {
+        alert(`${existingContact.name} is already in contacts.`);
+        return;
+      }
 
-        {_.isEmpty(filtered) && !isLoading && (
-          <p className={styles.notification}>No contact found.</p>
-        )}
-      </>
-    );
-  }
+      // Dispatching action to add new contact to DB
+      dispatch(addContact(newContact));
+
+      // Reseting local state to clean up input values
+      setNewContact({ name: '', number: '' });
+    },
+    [allContacts, dispatch, newContact],
+  );
+
+  return (
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <label>
+        Name
+        <input
+          type="name"
+          name="name"
+          value={newContact.name}
+          onChange={handleInputChange}
+          required
+        />
+      </label>
+      <label>
+        Number
+        <input
+          type="tel"
+          name="number"
+          value={newContact.number}
+          onChange={handleInputChange}
+          required
+        />
+      </label>
+      <button type="submit" className={styles.btn}>
+        Add
+      </button>
+    </form>
+  );
 }
-
-const mapStateToProps = state => ({
-  filtered: getFilteredItems(state),
-  isLoading: getLoading(state),
-});
-
-const mapDispatchToProps = dispatch => ({
-  onDeleteContact: contactId => dispatch(deleteContact(contactId)),
-  fetchContacts: () => dispatch(fetchContacts()),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ContactList);
