@@ -1,83 +1,58 @@
 // React imports
-import React, { useCallback, useState } from 'react';
+import React, { useEffect } from 'react';
+
+// Components imports
+import ContactListItem from '../ContactListItem';
 
 // Imports from Redux
-import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from '../../redux/contacts/contacts-operations';
-import { getAllContacts } from '../../redux/contacts/contacts-selectors';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchContacts } from '../../redux/contacts/contacts-operations';
+import {
+  getFilteredItems,
+  getLoading,
+} from '../../redux/contacts/contacts-selectors';
+
+// Helpers imports
+import _ from 'lodash';
+import Loader from 'react-loader-spinner';
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
 // Styles imports
-import styles from './ContactForm.module.css';
+import styles from './ContactList.module.css';
 
-export default function ContactForm() {
-  // Setting up state for input values
-  const [newContact, setNewContact] = useState({ name: '', number: '' });
-  // Getting all contacts from store
-  const allContacts = useSelector(getAllContacts);
-  // Getting dispatch function
+export default function ContactList() {
   const dispatch = useDispatch();
 
-  // Function to handle inputs
-  const handleInputChange = useCallback(
-    ({ target: { name, value } }) => {
-      setNewContact({ ...newContact, [name]: value });
-    },
-    [newContact],
-  );
+  // Sending HTTP request to fetch contacts
+  useEffect(() => dispatch(fetchContacts()), [dispatch]);
 
-  // Function to handle form submit
-  const handleSubmit = useCallback(
-    event => {
-      event.preventDefault();
+  // Getting data from Redux state through selectors
+  const filtered = useSelector(getFilteredItems);
+  const isLoading = useSelector(getLoading);
 
-      if (!newContact.name) {
-        return;
-      }
-
-      // Checking if the contact already exists
-      const existingContact = allContacts.find(
-        contact => contact.name === newContact.name,
-      );
-
-      if (existingContact) {
-        alert(`${existingContact.name} is already in contacts.`);
-        return;
-      }
-
-      // Dispatching action to add new contact to DB
-      dispatch(addContact(newContact));
-
-      // Reseting local state to clean up input values
-      setNewContact({ name: '', number: '' });
-    },
-    [allContacts, dispatch, newContact],
-  );
+  const loaderConfig = {
+    type: 'TailSpin',
+    color: '#80cbc4',
+    height: 50,
+    width: 50,
+    className: styles.loader,
+  };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <label>
-        Name
-        <input
-          type="name"
-          name="name"
-          value={newContact.name}
-          onChange={handleInputChange}
-          required
-        />
-      </label>
-      <label>
-        Number
-        <input
-          type="tel"
-          name="number"
-          value={newContact.number}
-          onChange={handleInputChange}
-          required
-        />
-      </label>
-      <button type="submit" className={styles.btn}>
-        Add
-      </button>
-    </form>
+    <>
+      {isLoading && <Loader {...loaderConfig} />}
+
+      {!_.isEmpty(filtered) && (
+        <ul className={styles.contacts}>
+          {filtered.map(contact => (
+            <ContactListItem key={contact.id} contact={contact} />
+          ))}
+        </ul>
+      )}
+
+      {_.isEmpty(filtered) && !isLoading && (
+        <p className={styles.notification}>No contact found.</p>
+      )}
+    </>
   );
 }

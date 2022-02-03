@@ -1,6 +1,6 @@
 // React imports
 import React, { Suspense, lazy, useEffect } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
 
 // Components imports
 import AppBar from './components/AppBar';
@@ -45,7 +45,7 @@ export default function App() {
   }, [dispatch]);
 
   return (
-    <>
+    <HashRouter basename='/'>
       <Suspense
         fallback={
           <Loader
@@ -88,6 +88,6 @@ export default function App() {
           </Route>
         </Switch>
       </Suspense>
-    </>
+    </HashRouter>
   );
 }

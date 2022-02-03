@@ -9,11 +9,15 @@ import {
   deleteContactRequest,
   deleteContactSuccess,
   deleteContactError,
+  updateContactRequest,
+  updateContactSuccess,
+  updateContactError,
 } from './contacts-actions';
+
 // Imports of libraries
 import axios from 'axios';
-// axios.defaults.baseURL = 'https://goit-phonebook-api.herokuapp.com';
 
+// Function to fetch all contacts from DB
 const fetchContacts = () => async dispatch => {
   dispatch(fetchContactsRequest());
 
@@ -25,6 +29,7 @@ const fetchContacts = () => async dispatch => {
   }
 };
 
+// Function to add new contact to DB
 const addContact = contact => async dispatch => {
   dispatch(addContactRequest());
 
@@ -36,6 +41,7 @@ const addContact = contact => async dispatch => {
   }
 };
 
+// Function to delete contact from DB
 const deleteContact = contactId => async dispatch => {
   dispatch(deleteContactRequest());
 
@@ -47,4 +53,17 @@ const deleteContact = contactId => async dispatch => {
   }
 };
 
-export { fetchContacts, addContact, deleteContact };
+// Function to update contact from DB
+const updateContact = (contactId, updatedUser, setSaving) => async dispatch => {
+  dispatch(updateContactRequest());
+
+  try {
+    const { data } = await axios.patch(`/contacts/${contactId}`, updatedUser);
+    dispatch(updateContactSuccess(data));
+    setSaving(false);
+  } catch (error) {
+    dispatch(updateContactError(error.message));
+  }
+};
+
+export { fetchContacts, addContact, deleteContact, updateContact };
