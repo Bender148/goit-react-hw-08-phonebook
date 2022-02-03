@@ -10,7 +10,7 @@ const HomePage = () => {
   return (
     <Main>
       <Section>
-        <PageTitle title="One App for ALL your contacts!" />
+        <PageTitle title="Phone book always with you" />
       </Section>
     </Main>
   );
